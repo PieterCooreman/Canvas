@@ -1,0 +1,83 @@
+<html>
+<head>
+<style>
+body {padding:0px;margin:0px;}
+</style>
+</head>
+<body>
+<canvas id="demo" style="background-color:#000"></canvas>
+<script>
+var c=document.getElementById('demo');
+var ctx=c.getContext("2d");
+
+window.addEventListener("load",setDimensions);
+window.addEventListener("resize",setDimensions);
+
+setInterval(draw,30);
+
+function setDimensions() {
+	c.width=window.innerWidth;
+	c.height=window.innerHeight;	
+};
+
+var arcs=[ ];
+
+//array of colors
+var colors = ["#DAF7A6","#FFC300","#FF5733","#C70039","#900C3F","#581845"];
+
+function draw() {
+
+	ctx.clearRect(0,0,c.width,c.height);
+	ctx.shadowBlur=10;
+	ctx.shadowOffsetX = 5;
+	ctx.shadowOffsetY = 5;
+	ctx.shadowColor="black";
+	
+	var arcObj = {
+		xPos:Math.floor(Math.random() * c.width),
+		yPos:Math.floor(Math.random() * c.height),
+		radius:0,
+		opacity:0.75,
+		color:colors[Math.floor(Math.random() * colors.length)]
+		};
+	
+	arcs.push(arcObj);
+
+	for (i = 0; i < arcs.length; i++) {
+		
+		var arc=arcs[i];	
+				
+		ctx.fillStyle = arc.color;		
+		ctx.globalAlpha= arc.opacity;
+		ctx.beginPath();
+		
+		ctx.arc(arc.xPos, arc.yPos, arc.radius, 0, Math.PI * 2);
+		ctx.fill();		
+		
+		arc.radius++;
+		
+		if (arc.radius>60) {
+			arc.opacity-=0.02;
+		}
+		else {
+			if (arc.opacity<0.99) {arc.opacity+=0.02};
+		};
+		
+		if (arc.opacity<0.01) {arcs.splice(arc,1);};	
+		
+	};
+		
+	//label
+	ctx.fillStyle="#000";
+	ctx.globalAlpha=0.8;
+	ctx.fillRect(c.width/2-100,c.height/2-45,200,75);	
+	ctx.fillStyle="white"
+	ctx.font="20pt Arial";
+	ctx.textAlign="center";
+	ctx.fillText("hypnoDrops",c.width/2,c.height/2);
+	//end label
+};
+
+</script>
+</body>
+</html>
