@@ -1,0 +1,69 @@
+<html>
+<head>
+<style>
+body {padding:0px;margin:0px;}
+</style>
+</head>
+<body>
+<canvas id="demo" style="background-color:#111"></canvas>
+<script>
+var c=document.getElementById('demo');
+var ctx=c.getContext("2d");
+
+window.addEventListener("load",setDimensions);
+window.addEventListener("resize",setDimensions);
+
+var cx,cy,radius,angle2;
+
+setInterval(draw,25);
+
+function setDimensions() {
+	c.width=window.innerWidth;
+	c.height=window.innerHeight;
+	cx = c.width/2;
+	cy = c.height/2;
+	radius = 0;
+	angle2=0;	
+};
+
+var total_circles = 7;
+
+function draw() {
+
+	ctx.clearRect(0,0,c.width,c.height)
+
+	for(i = 0; i < total_circles; i++){
+		ctx.fillStyle = "rgba(0,255,255,0.2)";
+		var angle = i * angle2 * Math.PI/total_circles;
+		var x = cx + Math.cos(angle) * radius;
+		var y = cy + Math.sin(angle) * radius;  	
+		
+		ctx.beginPath();
+		ctx.arc(x, y, radius, 0, Math.PI * 2, true);
+		ctx.closePath();
+		ctx.fill();	
+		
+	}	
+	
+	//label
+	ctx.fillStyle="#333";
+	ctx.globalAlpha=0.4;
+	ctx.fillRect(30,30,195,65);
+	ctx.globalAlpha=0.4;
+	ctx.fillStyle="white"
+	ctx.font="30pt Arial";
+	ctx.textAlign="center";
+	ctx.fillText("SPIRO",130,75);
+	ctx.globalAlpha=1;
+	//end label
+	
+	if (radius<500) {radius++;};
+	
+	angle2+=0.01;
+	
+}
+
+
+</script>
+</body>
+</html>
