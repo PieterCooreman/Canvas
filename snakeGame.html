@@ -1,0 +1,202 @@
+<html>
+<head>
+
+<style type="text/css">
+body {padding:0px;margin:0px;}
+</style>
+
+<script>
+//create the canvas element and get the 2d-drawing context
+var c=document.createElement('canvas');
+var cc=c.getContext("2d");
+c.style.backgroundSize="cover";
+c.style.backgroundImage="url(http://htmlcanvas.quickersite.com/userfiles/snake-3237.jpg)";
+	
+//load some audio samples
+var snd = new Audio("http://htmlcanvas.quickersite.com/userfiles/snake.mp3"); // buffers automatically when created
+var gameover = new Audio("http://htmlcanvas.quickersite.com/userfiles/gameover.mp3"); 
+
+//zet eenmalig 20 blokjes (om op te eten)
+var blokjes=[ ];
+zetBlokjes();     
+
+//beginlengte van de snake
+var snakeLength=0;
+
+//the following variables have a global scope, because they are used in various functions.
+var x,y;
+var arrBlocks=[ ];
+
+//this is where the animation is started.
+//25ms is a good framerate for animations.
+//the function "draw" (see below) will be executed each 25 milliseconds from now on.
+var starttijd;
+var animation=setInterval(draw,25);
+
+//let's add some event listeners, to respond to specific events raised by the user
+window.addEventListener("load",setDimensions);
+window.addEventListener("resize",setDimensions);
+window.addEventListener("keydown",directions); // whenever a key is pressed, the function "directions" will execute
+
+var goDown=false;goUp=false;goLeft=false;goRight=false;
+
+window.onload=function() {
+document.body.appendChild(c);
+};
+
+function setStartTime(){
+	
+	//we can set the starttime only once
+	if (starttijd == null) {
+		starttijd=new Date();
+		};
+};
+
+//this function sets the x and y variables, thus causing to move the block.
+function directions (e) {	
+
+	switch(e.keyCode) {
+	
+		case 38: //arrow-up
+			goUp=true;	
+			goDown=false;	
+			goLeft=false;
+			goRight=false;			
+			break;
+		case 40: //arrow-down
+			goDown=true;
+			goUp=false;	
+			goLeft=false;
+			goRight=false;
+			break;
+		case 37: //arrow-left
+			goLeft=true;
+			goUp=false;	
+			goDown=false;
+			goRight=false;
+			break;
+		case 39: //arrow-right
+			goRight=true;
+			goLeft=false;
+			goUp=false;	
+			goDown=false;
+			break;
+		default:return false; //nothing really happens when any other key is hit
+	}
+	
+	setStartTime();
+}
+
+//this function makes sure we'll always be using the entire width and 
+//height of a browser window, giving the animation somehow a 
+//responsive look and feel.
+function setDimensions() {
+	c.width=window.innerWidth;
+	c.height=window.innerHeight;
+	x=(window.innerWidth/2)-25;
+	y=(window.innerHeight/2)-25;
+};
+
+
+//this is the main function where you can program the animation.
+function draw() {	
+
+	//each time, the entire canvas is cleared
+	cc.clearRect(0,0,c.width,c.height);	
+	
+	//show a message to hit any arrow key as long as the game has not started
+	if (starttijd == null) {
+		cc.font="20pt Arial";
+		cc.fillStyle="white";		
+		cc.fillText("Click any arrow-key to start the game!",50,50);
+	}
+
+	//check boundaries. avoid escaping the canvas
+	if (x<0) {x=0;return false;}
+	if (y<0) {y=0;return false;}
+	if (x>window.innerWidth-50) {x=window.innerWidth-50;return false;}
+	if (y>window.innerHeight-50) {y=window.innerHeight-50;return false;}
+	
+	//set the direction of the moving block
+	if (goUp) {y-=7};
+	if (goDown) {y+=7};
+	if (goLeft) {x-=7};
+	if (goRight) {x+=7};
+
+	var block = {xPos:x, yPos:y};
+	
+	//add the newly created block to the array arrBlocks (unshift: add the block at the first position in the array)
+	arrBlocks.unshift (block);	
+	
+	
+	
+	toonBlokjes()	
+	
+	for (var i=0;i<arrBlocks.length;i++) {	
+		cc.fillStyle="pink";
+		cc.fillRect(arrBlocks[i].xPos, arrBlocks[i].yPos, 50, 50);	
+	};
+	
+	//controleer botsing
+	controleerBotsing(x,y);
+	
+	//remove the last item in the array (pop-function)
+	if (arrBlocks.length>snakeLength) {arrBlocks.pop();};
+	
+	//stop the animation when all blokjes are eaten up
+	if (blokjes.length==0) {
+		gameOver()
+		};
+				 
+};
+
+function controleerBotsing(xPos,yPos) {
+
+	for (var i=0;i<blokjes.length;i++) {
+		if ((xPos>=blokjes[i].xPos && xPos<=blokjes[i].xPos+25 && yPos>=blokjes[i].yPos && yPos<=blokjes[i].yPos+25) || (xPos+50>=blokjes[i].xPos && xPos+50<=blokjes[i].xPos+50 && yPos+50>=blokjes[i].yPos && yPos+50<=blokjes[i].yPos+50) ) {
+			blokjes.splice(i,1);
+			snakeLength+=5;	
+
+		//play audiofile - stop the previous sample first in order to start a new cycle each time
+		snd.pause();
+		snd.currentTime = 0;
+		snd.play();
+		};
+	};
+};
+
+function zetBlokjes () {
+
+	for (var i=0;i<10;i++) {
+		var figuur={xPos:0, yPos:0};
+		figuur.xPos=getRandomInt(window.innerWidth-25);
+		figuur.yPos=getRandomInt(window.innerHeight-25);	
+		blokjes.push(figuur)
+	};	
+};
+
+function toonBlokjes() {
+
+	for (var i=0;i<blokjes.length;i++) {
+		cc.fillStyle="white";		
+		cc.fillRect(blokjes[i].xPos, blokjes[i].yPos, 25, 25);	
+	};
+};
+
+function gameOver() {
+	cc.font="20pt Arial";
+	cc.fillStyle="white";
+	var stoptime=new Date();
+	cc.fillText("GAME OVER - Your time: " + Math.round(stoptime-starttijd)/1000 + " seconds!",50,50);
+	clearInterval(animation);	
+	gameover.play();
+	};
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+};
+</script>
+</head>
+<body>
+</body>
+</html>
