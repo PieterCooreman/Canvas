@@ -1,0 +1,116 @@
+<html>
+<head>
+<style>
+body {padding:0px;margin:0px;}
+</style>
+</head>
+<body>
+<canvas id="demo"></canvas>
+<script>
+var c=document.getElementById('demo');
+var cc=c.getContext("2d");
+
+window.addEventListener("load",setDimensions);
+window.addEventListener("resize",setDimensions);
+
+setInterval(draw,1000/25); //takes care of the drawing
+setInterval(bwColor,1000/20); //generates a day/night effect
+
+function setDimensions() {
+	c.width=window.innerWidth;
+	c.height=window.innerHeight;
+	c.style.backgroundColor="#222";
+	
+	//add shadow
+	cc.shadowBlur=7;
+	cc.shadowColor="black";
+	cc.shadowOffsetX = 5;
+	cc.shadowOffsetY = 5;
+};
+
+var blobarray = [ ];
+
+//array of gray colors - these are very similar colors, let's hope this works out well.
+var colors = ["#FFF300","#FFD500","#B7A132","#9C8A30","#8AA0B9","#86DA2C"];
+
+function draw() {
+
+	var blob = {
+		x:c.width/2, 
+		y:c.height/2,
+		bStroke:Math.round(Math.random()), //assign 0 or 1 (true or false)
+		color:colors[Math.floor(Math.random()*colors.length)], // random color from array "colors"
+		size:Math.floor(Math.random() * 50) + 80, //random square-size between 80 and 130
+		xSpeed:(Math.random() < 0.5 ? -1 : 1) * Math.floor(Math.random() * 15) + 1,  //random square-size between -15 and +15
+		ySpeed:(Math.random() < 0.5 ? -1 : 1) * Math.floor(Math.random() * 15) + 1  //random square-size between -15 and +15		
+		};
+
+	blobarray.push(blob);
+		
+	cc.clearRect(0,0,c.width,c.height);	//if you comment this line out, the blocks leave a trace
+	
+	for (var i=0;i<blobarray.length;i++) {
+	
+		blob=blobarray[i];		
+		
+		if (blob.x==c.width/2) { //first time, the square needs to be placed in the middle of the screen
+			blob.x=(c.width/2)-(blob.size/2); 
+			blob.y=(c.height/2)-(blob.size/2);
+			
+		} else {
+			blob.x=blob.x += blob.xSpeed;
+			blob.y=blob.y += blob.ySpeed;
+		};		
+		
+		
+		//if bStroke=1, create a stroke, otherwise, create a fill
+		if (blob.bStroke==1) {
+			cc.strokeStyle=blob.color;
+			cc.strokeRect (blob.x,blob.y,blob.size,blob.size);
+			} 
+			else 
+			{
+			cc.fillStyle=blob.color;
+			cc.fillRect (blob.x,blob.y,blob.size,blob.size);
+			};
+			
+		blob.size=blob.size * 0.98; //makes the blocks smaller with every step
+				
+		if (blob.size<2) {
+			blobarray.splice(blob, 1); //remove blob items when they're smaller than 2px;	
+		};		
+	};
+	
+	//let's add the number of current moving drops using another Google font
+	cc.fillStyle='gray';		
+	cc.globalAlpha=0.5; //turns transparency on
+	cc.fillRect (30,30,225,60); //create a transparent rectangle first!	
+	cc.globalAlpha=1; //turns transparency off
+	cc.font="1.3em Arial"; // set a second Google font (Love Ya Like A Sister)
+	cc.fillStyle="#DCDCDC";
+	cc.fillText ("Nmbr of squares: " + blobarray.length,42,65);		
+	cc.globalAlpha=0.6;
+};
+
+//Colorfunctions - experimental... needs finetuning...
+//used for bw background colors of the canvas
+var minusBW=Math.round(Math.random());
+colorBW=Math.round(Math.random() * 255);
+
+function bwColor() {
+	
+	if (colorBW>254 || minusBW) {
+		minusBW=true;
+		colorBW--;		
+		if (colorBW<1) {minusBW=false;}
+	} else {
+		colorBW++;		
+	};
+		
+	c.style.backgroundColor='rgb(' + colorBW + ',' + colorBW + ',' + colorBW + ')';
+	
+	};
+
+</script>
+</body>
+</html>
