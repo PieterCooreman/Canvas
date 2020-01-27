@@ -1,0 +1,80 @@
+<html>
+<head>
+<style>
+body {padding:0px;margin:0px;}
+</style>
+</head>
+<body>
+<canvas id="demo"></canvas>
+<script>
+var c=document.getElementById('demo');
+c.style.backgroundColor="#222";
+var cc=c.getContext("2d");
+
+window.addEventListener("load",setDimensions);
+window.addEventListener("resize",setDimensions);
+
+setInterval(draw,25); //takes care of the drawing
+
+function setDimensions() {
+	c.width=window.innerWidth;
+	c.height=window.innerHeight;	
+	
+	//add shadow
+	cc.shadowBlur=7;
+	cc.shadowColor="black";
+	cc.shadowOffsetX = 5;
+	cc.shadowOffsetY = 5;
+};
+
+//array of colors
+var colors = ["#3E5060","#75BDC9","#F5F4F3","#FF8686","#FFBF4A"];
+
+var blobarray = [ ];
+
+function draw() {
+
+	var blob = {
+		x:c.width/2, 
+		y:c.height/2,
+		color:colors[Math.floor(Math.random()*colors.length)], // random color from array "colors"
+		size:1,
+		xSpeed:(Math.random() < 0.5 ? -1 : 1) * Math.floor(Math.random() * 10) + 1,  //random square-size between -15 and +15
+		ySpeed:(Math.random() < 0.5 ? -1 : 1) * Math.floor(Math.random() * 10) + 1  //random square-size between -15 and +15		
+		};
+
+	blobarray.push(blob);
+		
+	cc.clearRect(0,0,c.width,c.height);	//if you comment this line out, the arcs leave a trace
+	
+	for (var i=0;i<blobarray.length;i++) {
+	
+		blob=blobarray[i];		
+		
+		if (blob.x==c.width/2) { //first time, the arc needs to be placed in the middle of the screen
+			blob.x=(c.width/2)-(blob.size/2); 
+			blob.y=(c.height/2)-(blob.size/2);
+			
+		} else {
+			blob.x=blob.x += blob.xSpeed;
+			blob.y=blob.y += blob.ySpeed;
+		};		
+		
+		cc.fillStyle = blob.color;		
+		
+		cc.beginPath();		
+		cc.arc(blob.x, blob.y, blob.size, 0, Math.PI * 2);
+		cc.fill();
+			
+		blob.size=blob.size * 1.04; //makes the arcs bigger with every step
+				
+		if (blob.size>50) {
+			blobarray.splice(blob, 1); //remove blob items when they're bigger than 100px;	
+		};		
+	};
+
+};
+
+</script>
+</body>
+</html>
