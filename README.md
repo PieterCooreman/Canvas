@@ -4,10 +4,9 @@ Creating canvas-animations is a fun way to learn JavaScript.
 I collected some more scripts on https://htmlcanvas.quickersite.com
 
 <ul>
-   <li><a href="animatedSquares.html">animatedSquares.html</a></li>
-  <li><a href="firewArcs.html">firewArcs.html</a></li>
-   <li><a href="hypnArcs.html">hypnArcs.html</a></li>
-  <li><a href="spiro.html">spiro.html</a></li>
-  <li><a href="snakeGame.html">snakeGame.html</a></li>
-  
+   <li><a target="_blank" href="https://pietercooreman.github.io/Canvas/animatedSquares.html">animatedSquares</a></li>
+  <li><a target="_blank"  href="https://pietercooreman.github.io/Canvas/firewArcs.html">firewArcs</a></li>
+   <li><a target="_blank"  href="https://pietercooreman.github.io/Canvas/hypnArcs.html">hypnArcs</a></li>
+  <li><a target="_blank"  href="https://pietercooreman.github.io/Canvas/spiro.html">spiro</a></li>
+  <li><a target="_blank"  href="https://pietercooreman.github.io/Canvas/snakeGame">snakeGame.html</a></li>
   </ul>
